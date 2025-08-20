@@ -10,4 +10,4 @@
     <x-sidebar-menu-dashboard routeName="index-practice" title="Laporan"/>
     <x-sidebar-menu-dashboard routeName="settings.index" title="Pengaturan"/>
 </x-sidebar-dashboard>
--
+

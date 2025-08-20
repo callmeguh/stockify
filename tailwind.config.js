@@ -14,6 +14,9 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                stockify: '#1f5b63', // warna custom kamu
+            },
         },
     },
 
