@@ -5,6 +5,8 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StockController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\SettingController; // nanti untuk pengaturan
 use Illuminate\Support\Facades\Route;
 
 // ======================= HALAMAN UTAMA =========================
@@ -31,11 +33,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         return view('layouts.admin.dashboard');
     })->name('admin.dashboard');
 
-    // Halaman practice
-    Route::get('/practice', function () {
-        return view('pages.practice.index');
-    })->name('index-practice');
-
     // CRUD Kategori
     Route::resource('categories', CategoryController::class);
 
@@ -47,6 +44,26 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     // CRUD Stok (khusus index, create, store)
     Route::resource('stocks', StockController::class)->only(['index','create','store']);
+
+    // CRUD Pengguna
+    Route::resource('users', UserController::class);
+
+    // ✅ Menu Pengaturan
+    Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+    Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
+
+    // ====================== PRACTICE ======================
+    Route::prefix('practice')
+        ->name('practice.')
+        ->group(function () {
+            Route::get('/', fn() => view('pages.practice.index'))->name('index');
+            Route::get('/product', [ProductController::class, 'index'])->name('produk');
+            Route::get('/categories', [CategoryController::class, 'index'])->name('kategori');
+            Route::get('/supplier', [SupplierController::class, 'index'])->name('supplier');
+
+            // Redirect ke stok index dari resource
+            Route::get('/stok', fn() => redirect()->route('stocks.index'))->name('stok');
+        });
 });
 
 // ======================= MANAJER ========================
@@ -74,19 +91,5 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
-// ====================== PRACTICE ======================
-Route::middleware(['auth', 'role:admin'])
-    ->prefix('practice')
-    ->name('practice.')
-    ->group(function () {
-        Route::get('/', fn() => view('pages.practice.index'))->name('index');
-        Route::get('/product', [ProductController::class, 'index'])->name('produk');
-        Route::get('/categories', [CategoryController::class, 'index'])->name('kategori');
-        Route::get('/supplier', [SupplierController::class, 'index'])->name('supplier');
-
-        // Redirect ke stok index dari resource
-        Route::get('/stok', fn() => redirect()->route('stocks.index'))->name('stok');
-    });
 
 require __DIR__ . '/auth.php';
