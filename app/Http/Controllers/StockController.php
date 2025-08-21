@@ -4,20 +4,44 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\StockTransaction;
+use App\Models\StockOpname;
+use Illuminate\Support\Facades\Auth;
 
 class StockController extends Controller
 {
     /**
-     * Menampilkan daftar stok (semua produk).
+     * Menampilkan halaman stok utama
      */
     public function index()
     {
-        $products = Product::orderBy('name')->get();
-        return view('pages.stocks.index', compact('products'));
+        $products     = Product::orderBy('name')->get();
+        $transactions = StockTransaction::with('product')->latest()->take(20)->get();
+        $opnames      = StockOpname::with('product','admin')->latest()->take(20)->get();
+
+        return view('pages.stocks.index', compact('products', 'transactions', 'opnames'));
     }
 
     /**
-     * Menampilkan form stock opname / tambah transaksi stok.
+     * API untuk transaksi realtime
+     */
+    public function transactionsRealtime()
+    {
+        $transactions = StockTransaction::with('product')->latest()->take(20)->get();
+        return response()->json($transactions);
+    }
+
+    /**
+     * API untuk opname realtime
+     */
+    public function opnameRealtime()
+    {
+        $opnames = StockOpname::with('product','admin')->latest()->take(20)->get();
+        return response()->json($opnames);
+    }
+
+    /**
+     * Form tambah opname / transaksi stok
      */
     public function create()
     {
@@ -26,7 +50,7 @@ class StockController extends Controller
     }
 
     /**
-     * Menyimpan transaksi stok baru.
+     * Simpan transaksi stok baru
      */
     public function store(Request $request)
     {
@@ -36,10 +60,29 @@ class StockController extends Controller
             'note'       => 'nullable|string|max:500',
         ]);
 
-        // Untuk sementara langsung update stok produk
         $product = Product::findOrFail($data['product_id']);
+
+        // Catat transaksi stok (selisih)
+        $difference = $data['real_stock'] - $product->stock;
+
+        StockTransaction::create([
+            'product_id'   => $product->id,
+            'type'         => $difference >= 0 ? 'in' : 'out',
+            'quantity'     => abs($difference),
+            'confirmed_by' => Auth::id(),
+        ]);
+
+        // Catat opname
+        StockOpname::create([
+            'product_id'   => $product->id,
+            'system_stock' => $product->stock,
+            'actual_stock' => $data['real_stock'],
+            'checked_by'   => Auth::id(),
+        ]);
+
+        // Update stok produk
         $product->update(['stock' => $data['real_stock']]);
 
-        return redirect()->route('stocks.index')->with('success', 'Transaksi stok berhasil ditambahkan.');
+        return redirect()->route('stocks.index')->with('success', 'Stock opname berhasil disimpan.');
     }
 }

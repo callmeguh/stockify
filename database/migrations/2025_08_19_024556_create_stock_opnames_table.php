@@ -13,13 +13,12 @@ return new class extends Migration
     {
         Schema::create('stock_opnames', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
+            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
             $table->integer('system_stock'); // stok menurut sistem
             $table->integer('actual_stock'); // stok hasil opname
-            $table->foreignId('checked_by')->constrained('users'); // admin
+            $table->foreignId('checked_by')->constrained('users')->cascadeOnDelete(); // admin
             $table->timestamps();
         });
-
     }
 
     /**

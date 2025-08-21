@@ -1,5 +1,5 @@
 <x-sidebar-dashboard>
-    <x-sidebar-menu-dashboard routeName="index-practice" title="Dashboard"/>
+    <x-sidebar-menu-dashboard routeName="admin.dashboard" title="Dashboard"/>
     <x-sidebar-menu-dropdown-dashboard routeName="practice.*" title="Manajemen Data">
         <x-sidebar-menu-dropdown-item-dashboard routeName="practice.produk" title="Produk"/>
         <x-sidebar-menu-dropdown-item-dashboard routeName="practice.kategori" title="Kategori"/>

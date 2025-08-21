@@ -40,6 +40,11 @@
     </div>
 
     <!-- ✅ Flowbite JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+    <!-- Flowbite Core JS (wajib untuk tabs/modal/dll) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+
+<!-- Opsional: kalau mau pakai datepicker -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/datepicker.min.js"></script>
+
 </body>
 </html>

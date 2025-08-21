@@ -6,7 +6,8 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\SettingController; // nanti untuk pengaturan
+use App\Http\Controllers\SettingController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 // ======================= HALAMAN UTAMA =========================
@@ -28,10 +29,8 @@ Route::get('/redirect', function () {
 
 // ======================= ADMIN =========================
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    // Dashboard admin
-    Route::get('/admin/dashboard', function () {
-        return view('layouts.admin.dashboard');
-    })->name('admin.dashboard');
+    // ✅ Dashboard admin
+    Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
     // CRUD Kategori
     Route::resource('categories', CategoryController::class);
@@ -44,6 +43,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     // CRUD Stok (khusus index, create, store)
     Route::resource('stocks', StockController::class)->only(['index','create','store']);
+
+    // Endpoint realtime transaksi & opname (AJAX)
+    Route::get('/stocks/transactions/realtime', [StockController::class, 'transactionsRealtime'])->name('stocks.transactions.realtime');
+    Route::get('/stocks/opname/realtime', [StockController::class, 'opnameRealtime'])->name('stocks.opname.realtime');
 
     // CRUD Pengguna
     Route::resource('users', UserController::class);
@@ -61,7 +64,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
             Route::get('/categories', [CategoryController::class, 'index'])->name('kategori');
             Route::get('/supplier', [SupplierController::class, 'index'])->name('supplier');
 
-            // Redirect ke stok index dari resource
+            // Redirect ke stok index
             Route::get('/stok', fn() => redirect()->route('stocks.index'))->name('stok');
         });
 });
