@@ -8,27 +8,23 @@
     <ul class="flex flex-wrap text-sm font-medium text-center border-b border-gray-200 mb-5"
         id="stockTabs"
         role="tablist">
-
         <li class="me-2">
             <button id="transactions-tab" type="button" role="tab"
-                aria-controls="transactions"
-                aria-selected="true"
+                aria-controls="transactions" aria-selected="true"
                 class="inline-block p-4 border-b-2 rounded-t-lg border-blue-600 text-blue-600">
                 Riwayat Transaksi
             </button>
         </li>
         <li class="me-2">
             <button id="opname-tab" type="button" role="tab"
-                aria-controls="opname"
-                aria-selected="false"
+                aria-controls="opname" aria-selected="false"
                 class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300">
                 Stock Opname
             </button>
         </li>
         <li class="me-2">
             <button id="minimum-tab" type="button" role="tab"
-                aria-controls="minimum"
-                aria-selected="false"
+                aria-controls="minimum" aria-selected="false"
                 class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300">
                 Pengaturan Minimum
             </button>
@@ -47,7 +43,6 @@
                             <th class="px-6 py-3">Produk</th>
                             <th class="px-6 py-3">Jenis</th>
                             <th class="px-6 py-3">Jumlah</th>
-                            <th class="px-6 py-3">Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -55,22 +50,14 @@
                             <tr class="bg-white border-b">
                                 <td class="px-6 py-4">{{ $trx->created_at->format('Y-m-d') }}</td>
                                 <td class="px-6 py-4">{{ $trx->product->name ?? '-' }}</td>
-                                <td class="px-6 py-4 {{ $trx->type == 'masuk' ? 'text-green-600' : 'text-red-600' }}">
-                                    {{ ucfirst($trx->type) }}
+                                <td class="px-6 py-4 {{ $trx->type == 'in' ? 'text-green-600' : 'text-red-600' }}">
+                                    {{ $trx->type == 'in' ? 'Masuk' : 'Keluar' }}
                                 </td>
                                 <td class="px-6 py-4">{{ $trx->quantity }}</td>
-                                <td class="px-6 py-4">
-                                    <span class="px-2.5 py-0.5 rounded text-xs font-medium
-                                        {{ $trx->status == 'Disetujui'
-                                            ? 'bg-green-100 text-green-800'
-                                            : 'bg-yellow-100 text-yellow-800' }}">
-                                        {{ $trx->status }}
-                                    </span>
-                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center p-4">Belum ada transaksi</td>
+                                <td colspan="4" class="text-center p-4">Belum ada transaksi</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -97,10 +84,10 @@
                             <tr class="bg-white border-b">
                                 <td class="px-6 py-4">{{ $op->created_at->format('Y-m-d') }}</td>
                                 <td class="px-6 py-4">{{ $op->product->name ?? '-' }}</td>
-                                <td class="px-6 py-4">{{ $op->stok_sistem }}</td>
-                                <td class="px-6 py-4">{{ $op->stok_fisik }}</td>
-                                <td class="px-6 py-4 {{ $op->stok_fisik < $op->stok_sistem ? 'text-red-600' : 'text-green-600' }}">
-                                    {{ $op->stok_fisik - $op->stok_sistem }}
+                                <td class="px-6 py-4">{{ $op->system_stock }}</td>
+                                <td class="px-6 py-4">{{ $op->actual_stock }}</td>
+                                <td class="px-6 py-4 {{ $op->actual_stock < $op->system_stock ? 'text-red-600' : 'text-green-600' }}">
+                                    {{ $op->actual_stock - $op->system_stock }}
                                 </td>
                             </tr>
                         @empty
@@ -116,7 +103,8 @@
         <!-- Pengaturan Minimum -->
         <div id="minimum" role="tabpanel" aria-labelledby="minimum-tab" class="hidden p-4 rounded-lg bg-gray-50">
             <h3 class="text-lg font-semibold mb-4">⚠️ Pengaturan Stok Minimum</h3>
-            <form class="max-w-sm">
+            <form method="POST" action="{{ route('stocks.minimum.store') }}" class="max-w-sm">
+                @csrf
                 <div class="mb-4">
                     <label for="product" class="block mb-2 text-sm font-medium text-gray-900">Pilih Produk</label>
                     <select id="product" name="product_id"
@@ -143,32 +131,23 @@
 </div>
 
 <script>
-    // Realtime load data
     function loadTransactions() {
-        fetch("{{ url('/stock/transactions/realtime') }}")
+        fetch("{{ url('/stocks/transactions/realtime') }}")
             .then(res => res.json())
             .then(data => {
                 let rows = "";
                 if (data.length === 0) {
-                    rows = `<tr><td colspan="5" class="text-center p-4">Belum ada transaksi</td></tr>`;
+                    rows = `<tr><td colspan="4" class="text-center p-4">Belum ada transaksi</td></tr>`;
                 } else {
                     data.forEach(trx => {
                         rows += `
                             <tr class="bg-white border-b">
                                 <td class="px-6 py-4">${new Date(trx.created_at).toLocaleDateString()}</td>
                                 <td class="px-6 py-4">${trx.product?.name ?? '-'}</td>
-                                <td class="px-6 py-4 ${trx.type == 'masuk' ? 'text-green-600' : 'text-red-600'}">
-                                    ${trx.type.charAt(0).toUpperCase() + trx.type.slice(1)}
+                                <td class="px-6 py-4 ${trx.type == 'in' ? 'text-green-600' : 'text-red-600'}">
+                                    ${trx.type == 'in' ? 'Masuk' : 'Keluar'}
                                 </td>
                                 <td class="px-6 py-4">${trx.quantity}</td>
-                                <td class="px-6 py-4">
-                                    <span class="px-2.5 py-0.5 rounded text-xs font-medium
-                                        ${trx.status == 'Disetujui'
-                                            ? 'bg-green-100 text-green-800'
-                                            : 'bg-yellow-100 text-yellow-800'}">
-                                        ${trx.status}
-                                    </span>
-                                </td>
                             </tr>
                         `;
                     });
@@ -178,7 +157,7 @@
     }
 
     function loadOpname() {
-        fetch("{{ url('/stock/opname/realtime') }}")
+        fetch("{{ url('/stocks/opname/realtime') }}")
             .then(res => res.json())
             .then(data => {
                 let rows = "";
@@ -190,10 +169,10 @@
                             <tr class="bg-white border-b">
                                 <td class="px-6 py-4">${new Date(op.created_at).toLocaleDateString()}</td>
                                 <td class="px-6 py-4">${op.product?.name ?? '-'}</td>
-                                <td class="px-6 py-4">${op.stok_sistem}</td>
-                                <td class="px-6 py-4">${op.stok_fisik}</td>
-                                <td class="px-6 py-4 ${op.stok_fisik < op.stok_sistem ? 'text-red-600' : 'text-green-600'}">
-                                    ${op.stok_fisik - op.stok_sistem}
+                                <td class="px-6 py-4">${op.system_stock}</td>
+                                <td class="px-6 py-4">${op.actual_stock}</td>
+                                <td class="px-6 py-4 ${op.actual_stock < op.system_stock ? 'text-red-600' : 'text-green-600'}">
+                                    ${op.actual_stock - op.system_stock}
                                 </td>
                             </tr>
                         `;
@@ -203,22 +182,17 @@
             });
     }
 
-    // load pertama kali
     loadTransactions();
     loadOpname();
-
-    // refresh tiap 5 detik
     setInterval(() => {
         loadTransactions();
         loadOpname();
     }, 5000);
 
-    // Tab switching sederhana
     document.querySelectorAll('#stockTabs button').forEach(btn => {
         btn.addEventListener('click', function () {
             let target = this.getAttribute('aria-controls');
 
-            // reset semua tab
             document.querySelectorAll('#stockTabs button').forEach(b => {
                 b.classList.remove('border-blue-600', 'text-blue-600');
                 b.classList.add('border-transparent');
@@ -227,7 +201,6 @@
                 div.classList.add('hidden');
             });
 
-            // aktifkan yang dipilih
             this.classList.add('border-blue-600', 'text-blue-600');
             document.getElementById(target).classList.remove('hidden');
         });

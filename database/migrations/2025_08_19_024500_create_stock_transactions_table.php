@@ -13,13 +13,12 @@ return new class extends Migration
     {
         Schema::create('stock_transactions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
+            $table->foreignId('product_id')->constrained()->onDelete('cascade'); // relasi ke products
             $table->enum('type', ['in', 'out']); // barang masuk/keluar
             $table->integer('quantity');
-            $table->foreignId('confirmed_by')->nullable()->constrained('users'); // manajer
-            $table->timestamps();
-    });
-
+            $table->foreignId('confirmed_by')->nullable()->constrained('users')->nullOnDelete(); // relasi ke users (nullable)
+            $table->timestamps(); // created_at & updated_at otomatis
+        });
     }
 
     /**

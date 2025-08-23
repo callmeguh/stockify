@@ -7,7 +7,7 @@
         <x-sidebar-menu-dropdown-item-dashboard routeName="practice.supplier" title="Supplier"/>
     </x-sidebar-menu-dropdown-dashboard>
     <x-sidebar-menu-dashboard routeName="users.index" title="Pengguna"/>
-    <x-sidebar-menu-dashboard routeName="index-practice" title="Laporan"/>
+    <x-sidebar-menu-dashboard routeName="reports.index" title="Laporan"/>
     <x-sidebar-menu-dashboard routeName="settings.index" title="Pengaturan"/>
 </x-sidebar-dashboard>
 

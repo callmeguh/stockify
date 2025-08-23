@@ -9,11 +9,14 @@ class StockOpname extends Model
 {
     use HasFactory;
 
+    /**
+     * Kolom yang bisa diisi mass-assignment
+     */
     protected $fillable = [
         'product_id',
         'system_stock',
         'actual_stock',
-        'checked_by'
+        'checked_by',
     ];
 
     /**
@@ -21,11 +24,11 @@ class StockOpname extends Model
      */
     public function product()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class, 'product_id');
     }
 
     /**
-     * Relasi ke user yang melakukan pengecekan
+     * Relasi ke user/admin yang melakukan pengecekan
      */
     public function admin()
     {

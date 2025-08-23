@@ -16,10 +16,11 @@ class Product extends Model
         'price',
         'stock',
         'description',
+        'minimum_stock',
     ];
 
     /**
-     * Relasi ke kategori produk.
+     * Relasi ke kategori produk
      */
     public function category()
     {
@@ -27,7 +28,7 @@ class Product extends Model
     }
 
     /**
-     * Relasi ke supplier produk.
+     * Relasi ke supplier produk
      */
     public function supplier()
     {
@@ -35,7 +36,7 @@ class Product extends Model
     }
 
     /**
-     * Relasi ke atribut produk (warna, ukuran, dll).
+     * Relasi ke atribut produk (warna, ukuran, dll)
      */
     public function attributes()
     {
@@ -43,7 +44,7 @@ class Product extends Model
     }
 
     /**
-     * Relasi ke transaksi stok (barang masuk/keluar).
+     * Relasi ke transaksi stok (barang masuk/keluar)
      */
     public function transactions()
     {
@@ -51,7 +52,7 @@ class Product extends Model
     }
 
     /**
-     * Relasi ke stock opname (pengecekan stok).
+     * Relasi ke stock opname (pengecekan stok)
      */
     public function opnames()
     {
