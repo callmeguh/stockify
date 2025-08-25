@@ -19,7 +19,7 @@ class StockTransaction extends Model
         'type',          // tipe transaksi: 'in' atau 'out'
         'quantity',      // jumlah barang
         'status',        // status: pending, confirmed, partial, ready, menunggu
-        'confirmed_by',  // ID user/staff yang mengonfirmasi
+        'confirmed_by',  // ID user/staff/manager yang mengonfirmasi
     ];
 
     /**
@@ -42,6 +42,14 @@ class StockTransaction extends Model
      * Relasi ke user/staff/manager yang mengonfirmasi
      */
     public function confirmedBy()
+    {
+        return $this->belongsTo(User::class, 'confirmed_by');
+    }
+
+    /**
+     * Alias relasi untuk manager (supaya tidak error ketika dipanggil 'manager')
+     */
+    public function manager()
     {
         return $this->belongsTo(User::class, 'confirmed_by');
     }

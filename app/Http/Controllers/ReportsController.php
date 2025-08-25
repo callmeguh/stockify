@@ -3,70 +3,42 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Product;              // Model produk
-use App\Models\StockTransaction;     // Model transaksi stok
-use App\Models\UserActivity;         // Model aktivitas pengguna
+use App\Models\Product;
+use App\Models\StockTransaction;
+use App\Models\ActivityLog;
 
 class ReportsController extends Controller
 {
-    /**
-     * Menampilkan halaman laporan admin
-     */
     public function index(Request $request)
     {
-        // ---------------------------
-        // Laporan Stok Barang
-        // ---------------------------
-        $stokQuery = Product::with('category');
+        $startDate = $request->filled('start_date') ? $request->start_date . ' 00:00:00' : null;
+        $endDate   = $request->filled('end_date')   ? $request->end_date . ' 23:59:59'   : null;
 
-        // Filter kategori jika ada
+        // ---------------- Laporan Stok Barang ----------------
+        $stokQuery = Product::with('category');
         if ($request->filled('category')) {
             $stokQuery->where('category_id', $request->category);
         }
-
-        // Filter periode jika ada (updated_at)
-        if ($request->filled('start_date') && $request->filled('end_date')) {
-            $stokQuery->whereBetween('updated_at', [
-                $request->start_date . ' 00:00:00',
-                $request->end_date . ' 23:59:59'
-            ]);
+        if ($startDate && $endDate) {
+            $stokQuery->whereBetween('updated_at', [$startDate, $endDate]);
         }
-
         $stokBarang = $stokQuery->get();
 
-        // ---------------------------
-        // Laporan Transaksi Barang
-        // ---------------------------
+        // ---------------- Laporan Transaksi ----------------
         $transaksiQuery = StockTransaction::with('product');
-
-        // Filter periode transaksi
-        if ($request->filled('start_date') && $request->filled('end_date')) {
-            $transaksiQuery->whereBetween('created_at', [
-                $request->start_date . ' 00:00:00',
-                $request->end_date . ' 23:59:59'
-            ]);
+        if ($startDate && $endDate) {
+            $transaksiQuery->whereBetween('created_at', [$startDate, $endDate]);
         }
+        $transaksiBarang = $transaksiQuery->latest()->get();
 
-        $transaksiBarang = $transaksiQuery->orderBy('created_at', 'desc')->get();
-
-        // ---------------------------
-        // Laporan Aktivitas Pengguna
-        // ---------------------------
-        $aktivitasQuery = UserActivity::with('user');
-
-        // Filter periode aktivitas
-        if ($request->filled('start_date') && $request->filled('end_date')) {
-            $aktivitasQuery->whereBetween('created_at', [
-                $request->start_date . ' 00:00:00',
-                $request->end_date . ' 23:59:59'
-            ]);
+        // ---------------- Laporan Aktivitas Pengguna ----------------
+        $aktivitasQuery = ActivityLog::with('user');
+        if ($startDate && $endDate) {
+            $aktivitasQuery->whereBetween('created_at', [$startDate, $endDate]);
         }
+        $aktivitasPengguna = $aktivitasQuery->latest()->get();
 
-        $aktivitasPengguna = $aktivitasQuery->orderBy('created_at', 'desc')->get();
-
-        // ---------------------------
-        // Kirim data ke view
-        // ---------------------------
+        // ---------------- Kirim ke view ----------------
         return view('pages.reports.index', compact(
             'stokBarang',
             'transaksiBarang',

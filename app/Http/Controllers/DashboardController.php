@@ -12,16 +12,17 @@ class DashboardController extends Controller
     {
         // Data ringkasan
         $totalProduk = Product::count();
-        $totalMasuk = StockTransaction::where('type', 'masuk')->count();
-        $totalKeluar = StockTransaction::where('type', 'keluar')->count();
+        $totalMasuk = StockTransaction::where('type', 'in')->count();   // pakai 'in'
+        $totalKeluar = StockTransaction::where('type', 'out')->count(); // pakai 'out'
         $totalUser = User::count();
 
         // Data stok produk untuk chart
         $stokProduk = Product::select('name', 'stock')->get();
 
-        // Aktivitas pengguna terbaru
+        // Aktivitas terbaru
         $aktivitas = StockTransaction::latest()->take(5)->get();
 
+        // Arahkan ke view admin dashboard
         return view('layouts.admin.dashboard', compact(
             'totalProduk',
             'totalMasuk',

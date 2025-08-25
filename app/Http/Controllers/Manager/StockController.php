@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Manager;
 use App\Http\Controllers\Controller;
 use App\Models\StockTransaction;
 use App\Models\Product;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class StockController extends Controller
 {
@@ -31,7 +33,7 @@ class StockController extends Controller
         ]);
 
         // Simpan transaksi masuk
-        StockTransaction::create([
+        $transaction = StockTransaction::create([
             'product_id' => $request->product_id,
             'quantity'   => $request->quantity,
             'type'       => 'in',
@@ -41,6 +43,12 @@ class StockController extends Controller
         $product = Product::find($request->product_id);
         $product->stock += $request->quantity;
         $product->save();
+
+        // Catat ke activity log
+        ActivityLog::create([
+            'user_id'   => Auth::id(),
+            'deskripsi' => "Manager mencatat barang MASUK: {$product->name} (jumlah: {$request->quantity})",
+        ]);
 
         return redirect()->route('manager.stocks.incoming')
                          ->with('success', 'Barang masuk berhasil dicatat dan stok diperbarui!');
@@ -76,7 +84,7 @@ class StockController extends Controller
         }
 
         // Simpan transaksi keluar
-        StockTransaction::create([
+        $transaction = StockTransaction::create([
             'product_id' => $request->product_id,
             'quantity'   => $request->quantity,
             'type'       => 'out',
@@ -85,6 +93,12 @@ class StockController extends Controller
         // Kurangi stok produk
         $product->stock -= $request->quantity;
         $product->save();
+
+        // Catat ke activity log
+        ActivityLog::create([
+            'user_id'   => Auth::id(),
+            'deskripsi' => "Manager mencatat barang KELUAR: {$product->name} (jumlah: {$request->quantity})",
+        ]);
 
         return redirect()->route('manager.stocks.outgoing')
                          ->with('success', 'Barang keluar berhasil dicatat dan stok diperbarui!');

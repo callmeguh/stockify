@@ -41,7 +41,8 @@ class ProductController extends Controller
 
         $this->syncAttributes($product, $request->input('attributes', []));
 
-        return redirect()->route('products.index')->with('success', 'Produk berhasil ditambahkan!');
+        return redirect()->route('products.index')
+                         ->with('success', 'Produk berhasil ditambahkan!');
     }
 
     public function edit(Product $product)
@@ -72,13 +73,16 @@ class ProductController extends Controller
 
         $this->syncAttributes($product, $request->input('attributes', []));
 
-        return redirect()->route('products.index')->with('success', 'Produk berhasil diperbarui!');
+        return redirect()->route('products.index')
+                         ->with('success', 'Produk berhasil diperbarui!');
     }
 
     public function destroy(Product $product)
     {
         $product->delete();
-        return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus!');
+
+        return redirect()->route('products.index')
+                         ->with('success', 'Produk berhasil dihapus!');
     }
 
     private function syncAttributes(Product $product, $attributes = [])

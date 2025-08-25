@@ -20,14 +20,14 @@ class SupplierController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'nullable|email|max:255',
-            'phone' => 'nullable|string|max:20',
+        $data = $request->validate([
+            'name'    => 'required|string|max:255',
+            'email'   => 'nullable|email|max:255',
+            'phone'   => 'nullable|string|max:20',
             'address' => 'nullable|string|max:255',
         ]);
 
-        Supplier::create($request->all());
+        Supplier::create($data);
 
         return redirect()->route('suppliers.index')->with('success', 'Supplier berhasil ditambahkan!');
     }
@@ -39,14 +39,14 @@ class SupplierController extends Controller
 
     public function update(Request $request, Supplier $supplier)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'nullable|email|max:255',
-            'phone' => 'nullable|string|max:20',
+        $data = $request->validate([
+            'name'    => 'required|string|max:255',
+            'email'   => 'nullable|email|max:255',
+            'phone'   => 'nullable|string|max:20',
             'address' => 'nullable|string|max:255',
         ]);
 
-        $supplier->update($request->all());
+        $supplier->update($data);
 
         return redirect()->route('suppliers.index')->with('success', 'Supplier berhasil diperbarui!');
     }

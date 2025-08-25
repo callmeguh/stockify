@@ -10,7 +10,6 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::all();
-        // path view diperbarui sesuai struktur folder
         return view('layouts.manager.products.index', compact('products'));
     }
 

@@ -67,15 +67,42 @@
         <canvas id="stokChart" height="100"></canvas>
     </div>
 
-    {{-- Aktivitas terbaru --}}
-    <div class="bg-white shadow p-6 rounded-2xl">
-        <h2 class="text-lg font-semibold mb-4">🕒 Aktivitas Terbaru</h2>
-        <ul class="space-y-2 text-gray-700">
-            @foreach ($aktivitas as $item)
-                <li class="border-b pb-2">- {{ $item->type }} <span class="text-sm text-gray-500">({{ $item->created_at }})</span></li>
-            @endforeach
-        </ul>
-    </div>
+{{-- Aktivitas terbaru --}}
+<div class="bg-white shadow-lg rounded-2xl p-6">
+    <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+        <span>🕒</span> Aktivitas Terbaru
+    </h2>
+    <ul class="space-y-3">
+        @foreach ($aktivitas as $item)
+            @php
+                if ($item->type === 'in') {
+                    $label = 'Barang Masuk';
+                    $color = 'green';
+                } elseif ($item->type === 'out') {
+                    $label = 'Barang Keluar';
+                    $color = 'red';
+                } else {
+                    $label = ucfirst($item->type);
+                    $color = 'gray';
+                }
+            @endphp
+            <li class="flex justify-between items-center p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition">
+                <div class="flex items-center gap-2">
+                    <span class="inline-block px-2 py-1 text-xs font-semibold text-{{ $color }}-800 bg-{{ $color }}-100 rounded-full">
+                        {{ $label }}
+                    </span>
+                    <span class="text-gray-700">{{ $item->deskripsi }}</span>
+                </div>
+                <span class="text-sm text-gray-400">{{ $item->created_at->format('d M Y H:i') }}</span>
+            </li>
+        @endforeach
+    </ul>
+    @if($aktivitas->isEmpty())
+        <p class="text-center text-gray-400 mt-4">Belum ada aktivitas terbaru</p>
+    @endif
+</div>
+
+
 </div>
 @endsection
 

@@ -31,9 +31,19 @@
                     <td class="px-6 py-3">{{ $user->email }}</td>
                     <td class="px-6 py-3">
                         <span class="px-3 py-1 rounded text-xs
-                            {{ $user->role == 'manajer' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' }}">
-                            {{ ucfirst($user->role) }}
-                        </span>
+    @if($user->role == 'admin')
+        bg-blue-100 text-blue-700
+    @elseif($user->role == 'manajer')
+        bg-green-100 text-green-700
+    @elseif($user->role == 'staff')
+        bg-yellow-100 text-yellow-700
+    @else
+        bg-gray-100 text-gray-700
+    @endif
+">
+    {{ ucfirst($user->role) }}
+</span>
+
                     </td>
                     <td class="px-6 py-3">
                         <a href="{{ route('users.edit', $user->id) }}" class="text-blue-600 hover:underline">✏️ Edit</a> |

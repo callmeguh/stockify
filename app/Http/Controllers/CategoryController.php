@@ -21,7 +21,7 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
-        // validasi hanya untuk nama kategori
+        // validasi nama kategori
         $request->validate([
             'name' => 'required|string|max:255',
         ]);
@@ -54,7 +54,7 @@ class CategoryController extends Controller
             'name' => $request->name,
         ]);
 
-        // hapus atribut lama lalu simpan ulang (kalau ada input)
+        // hapus atribut lama lalu simpan ulang
         $category->attributes()->delete();
         if ($request->has('attributes')) {
             foreach ($request->attributes as $attr) {

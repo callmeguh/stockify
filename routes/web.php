@@ -67,6 +67,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // Reports
     Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
 
+    // Laporan Aktivitas Pengguna (Admin)
+    Route::get('/reports/activities', [ReportsController::class, 'activities'])->name('reports.activities');
+
     // Practice (latihan menu)
     Route::prefix('practice')->name('practice.')->group(function () {
         Route::get('/', fn() => view('pages.practice.index'))->name('index');
