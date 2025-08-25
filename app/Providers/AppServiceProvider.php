@@ -3,12 +3,14 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\View;
 
 // Models
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Supplier;
 use App\Models\StockTransaction;
+use App\Models\Setting; // <--- tambahin ini
 
 // Observers
 use App\Observers\ProductObserver;
@@ -35,5 +37,10 @@ class AppServiceProvider extends ServiceProvider
         Category::observe(CategoryObserver::class);
         Supplier::observe(SupplierObserver::class);
         StockTransaction::observe(StockTransactionObserver::class);
+
+        // 🔥 Tambahkan ini biar $setting tersedia di semua view
+        View::composer('*', function ($view) {
+            $view->with('setting', Setting::first());
+        });
     }
 }

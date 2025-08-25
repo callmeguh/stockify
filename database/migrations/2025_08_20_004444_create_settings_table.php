@@ -13,13 +13,23 @@ return new class extends Migration
     {
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
-            $table->string('app_name')->default('Nama Aplikasi');
-            $table->string('logo')->nullable(); // path logo
-            $table->string('favicon')->nullable(); // opsional
-            $table->text('description')->nullable();
-            $table->timestamps();
-});
 
+            // Nama aplikasi
+            $table->string('app_name')->default('Nama Aplikasi');
+
+            // Path ke file logo
+            $table->string('logo', 2048)->nullable();
+
+            // Path ke file favicon (opsional)
+            $table->string('favicon', 2048)->nullable();
+
+            // Deskripsi aplikasi
+            $table->text('description')->nullable();
+
+            $table->string('bg_color', 20)->nullable()->default('#1e40af');
+
+            $table->timestamps();
+        });
     }
 
     /**

@@ -5,6 +5,7 @@
         <x-sidebar-menu-dropdown-item-dashboard routeName="practice.kategori" title="Kategori"/>
         <x-sidebar-menu-dropdown-item-dashboard routeName="practice.stok" title="Stok"/>
         <x-sidebar-menu-dropdown-item-dashboard routeName="practice.supplier" title="Supplier"/>
+        <x-sidebar-menu-dropdown-item-dashboard routeName="practice.import-export" title="Import/Export Data"/>
     </x-sidebar-menu-dropdown-dashboard>
     <x-sidebar-menu-dashboard routeName="users.index" title="Pengguna"/>
     <x-sidebar-menu-dashboard routeName="reports.index" title="Laporan"/>
